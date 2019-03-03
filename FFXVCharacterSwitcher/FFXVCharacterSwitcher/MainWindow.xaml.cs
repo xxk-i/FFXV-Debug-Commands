@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+using System.Diagnostics;
 
 namespace FFXVCharacterSwitcher
 {
@@ -45,6 +37,27 @@ namespace FFXVCharacterSwitcher
         private void checkBoxUnchecked(object send, RoutedEventArgs e)
         {
             //partyBox.IsReadOnly = false;
+        }
+
+        private void noctisPointerButton_Click(object sender, RoutedEventArgs e)
+        {
+            //its time
+            Int32 targetPID = 0;
+            string targetexe = "ffxv_s";
+            string channelName = null;
+
+            Process process = Process.GetProcessesByName(targetexe)[0];
+            targetPID = process.Id;
+
+            //Create IPC server from FFXVHook dll
+            EasyHook.RemoteHooking.IpcCreateServer<FFXVHook.ServerInterface>(ref channelName, System.Runtime.Remoting.WellKnownObjectMode.Singleton);
+
+            //Path to assembly to inject into FFXV
+            //string InjectionLibrary = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "FFXVHook.dll");
+            //"C:\\Users\\jeremy\\Desktop\\ffxv-character-switcher\\FFXVCharacterSwitcher\\FFXVCharacterSwitcher\\bin\\Debug\\FFXVHook.dll"
+            string InjectionLibrary = @"C:\Users\jeremy\Desktop\FFXVHook.dll";
+
+            EasyHook.RemoteHooking.Inject(targetPID, InjectionLibrary, InjectionLibrary, channelName);
         }
     }
 }
