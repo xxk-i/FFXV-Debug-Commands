@@ -17,29 +17,29 @@ namespace FFXVCharacterSwitcher
             InitializeComponent();
         }
 
-        private void partyBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void PartyBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
 
-        private void partyButton_Click(object sender, RoutedEventArgs e)
+        private void PartyButton_Click(object sender, RoutedEventArgs e)
         {
             int selection = PartyBox.SelectedIndex;
 
             Switcher.SwitchToPartyMember(PartyBox.SelectedIndex);
         }
 
-        private void checkBox_Checked(object sender, RoutedEventArgs e)
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            //partyButton.SetValue(
+            
         }
 
-        private void checkBoxUnchecked(object send, RoutedEventArgs e)
+        private void CheckBoxUnchecked(object send, RoutedEventArgs e)
         {
-            //partyBox.IsReadOnly = false;
+            
         }
 
-        private void noctisPointerButton_Click(object sender, RoutedEventArgs e)
+        private void InjectHacks_Click(object sender, RoutedEventArgs e)
         {
             //its time
             Int32 targetPID = 0;
@@ -65,9 +65,10 @@ namespace FFXVCharacterSwitcher
             string InjectionLibrary = @System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "FFXVHook.dll");
 
             EasyHook.RemoteHooking.Inject(targetPID, InjectionLibrary, InjectionLibrary, channelName);
+            FFXVHook.ServerInterface.RunTheThing();
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
         }
     }

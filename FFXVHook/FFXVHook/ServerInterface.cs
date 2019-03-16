@@ -39,5 +39,10 @@ namespace FFXVHook
         {
 
         }
+
+        public static void RunTheThing()
+        {
+            InjectionEntryPoint.WhatsUp();
+        }
     }
 }

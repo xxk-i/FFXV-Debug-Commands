@@ -18,8 +18,6 @@ namespace FFXVHook
 
         int clientPID = EasyHook.RemoteHooking.GetCurrentProcessId();
 
-        
-
         public InjectionEntryPoint(EasyHook.RemoteHooking.IContext context, string channelName)
         {
             _server = EasyHook.RemoteHooking.IpcConnectClient<ServerInterface>(channelName);
@@ -40,13 +38,27 @@ namespace FFXVHook
         public void Run(EasyHook.RemoteHooking.IContext context, string channelName)
         {
             _server.IsInstalled(clientPID);
-            FunctionImports.OnSelectPlayerChangeMenuDelegate test = new FunctionImports.OnSelectPlayerChangeMenuDelegate(OnSelectPlayerChangeMenu_Hook);
-            //_server.ReportMessage((modBase + 0xD1D80).ToString());
 
-            var OnSelectPlayerChangeMenuHook = EasyHook.LocalHook.Create(FunctionImports.OnSelectPlayerChangeMenuAddr, test, null);
+            //Install hooks
+            var OnSelectPlayerChangeMenuHook = EasyHook.LocalHook.Create(FunctionImports.OnSelectPlayerChangeMenuAddr, new FunctionImports.OnSelectPlayerChangeMenu(OnSelectPlayerChangeMenu_Hook), null);
+
+            //Activate hooks
             OnSelectPlayerChangeMenuHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
 
-            _server.ReportMessage(EasyHook.HookRuntimeInfo.IsHandlerContext.ToString());
+            //Collect OnSelectPlayerChangeThis for calling OnSelectPlayerChangeMenu
+            OnSelectPlayerChangeThis = FunctionImports.GetPlayerChangeManagerFunc();
+
+            /*
+             * 
+             * TODO TODO TODO TODO
+             * Enable option in debug struct to allow swtiching to bros at any point
+             * 
+             */
+
+            _server.ReportMessage("Collected pointer: " + OnSelectPlayerChangeThis.ToString("X"));
+
+            //Call it and switch to the guest
+            FunctionImports.OnSelectPlayerChangeMenuFunc(OnSelectPlayerChangeThis, 3);
 
             //TODO log this in GUI console tab
             //_server.ReportMessage("Created correctly? Check: " + (FunctionImports.modBase + 0x8BEF10).ToString("X"));
@@ -60,7 +72,6 @@ namespace FFXVHook
                         _server.ReportMessage("Captured ptrActorManager: " + OnSelectPlayerChangeThis.ToString("X"));
                     }
                     System.Threading.Thread.Sleep(500);
-                    //_server.ReportMessage("maybe");
 
                     string[] queued = null;
 
@@ -93,6 +104,10 @@ namespace FFXVHook
             return;
         }
         
+        public static void WhatsUp()
+        {
+            Console.WriteLine("Hi");
+        }
     }
 }
 
