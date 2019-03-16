@@ -46,18 +46,29 @@ namespace FFXVCharacterSwitcher
             string targetexe = "ffxv_s";
             string channelName = null;
 
-            Process process = Process.GetProcessesByName(targetexe)[0];
-            targetPID = process.Id;
+            try
+            {
+                Process process = Process.GetProcessesByName(targetexe)[0];
+                targetPID = process.Id;
+            }
+
+            catch
+            {
+                MessageBox.Show("Error: Game Not Found!");
+                return;
+            }
 
             //Create IPC server from FFXVHook dll
             EasyHook.RemoteHooking.IpcCreateServer<FFXVHook.ServerInterface>(ref channelName, System.Runtime.Remoting.WellKnownObjectMode.Singleton);
 
             //Path to assembly to inject into FFXV
-            //string InjectionLibrary = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "FFXVHook.dll");
-            //"C:\\Users\\jeremy\\Desktop\\ffxv-character-switcher\\FFXVCharacterSwitcher\\FFXVCharacterSwitcher\\bin\\Debug\\FFXVHook.dll"
-            string InjectionLibrary = @"C:\Users\jeremy\Desktop\FFXVHook.dll";
+            string InjectionLibrary = @System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "FFXVHook.dll");
 
             EasyHook.RemoteHooking.Inject(targetPID, InjectionLibrary, InjectionLibrary, channelName);
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

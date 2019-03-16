@@ -15,7 +15,7 @@ namespace FFXVHook
         }
 
         //Output messages to console
-        public void ReportMessages(int clientPID, string[] messages)
+        public void ReportMessages(string[] messages)
         {
             foreach (string message in messages)
             {
@@ -23,7 +23,7 @@ namespace FFXVHook
             }
         }
 
-        public void ReportMessage(int clientPID, string message)
+        public void ReportMessage(string message)
         {
             Console.WriteLine(message);
         }
