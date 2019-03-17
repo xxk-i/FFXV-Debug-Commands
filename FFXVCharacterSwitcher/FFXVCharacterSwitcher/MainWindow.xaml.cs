@@ -12,6 +12,9 @@ namespace FFXVCharacterSwitcher
     /// </summary>
     public partial class MainWindow : Window
     {
+        FFXVHook.ServerInterface server;
+        private string channelName;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -24,9 +27,11 @@ namespace FFXVCharacterSwitcher
 
         private void PartyButton_Click(object sender, RoutedEventArgs e)
         {
-            int selection = PartyBox.SelectedIndex;
+            int index = PartyBox.SelectedIndex;
 
-            Switcher.SwitchToPartyMember(PartyBox.SelectedIndex);
+            //server = EasyHook.RemoteHooking.IpcConnectClient<FFXVHook.ServerInterface>(channelName);
+
+            server?.SwitchCharacter(index);
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -44,7 +49,7 @@ namespace FFXVCharacterSwitcher
             //its time
             Int32 targetPID = 0;
             string targetexe = "ffxv_s";
-            string channelName = null;
+            channelName = null;
 
             try
             {
@@ -60,16 +65,20 @@ namespace FFXVCharacterSwitcher
 
             //Create IPC server from FFXVHook dll
             EasyHook.RemoteHooking.IpcCreateServer<FFXVHook.ServerInterface>(ref channelName, System.Runtime.Remoting.WellKnownObjectMode.Singleton);
+            Console.WriteLine(channelName);
 
             //Path to assembly to inject into FFXV
             string InjectionLibrary = @System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "FFXVHook.dll");
+            Console.WriteLine(InjectionLibrary);
 
             EasyHook.RemoteHooking.Inject(targetPID, InjectionLibrary, InjectionLibrary, channelName);
-            FFXVHook.ServerInterface.RunTheThing();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Disconnect_Click(object sender, RoutedEventArgs e)
         {
+            server = EasyHook.RemoteHooking.IpcConnectClient<FFXVHook.ServerInterface>(channelName);
+
+            if (server != null) server.Disconnect();
         }
     }
 }
