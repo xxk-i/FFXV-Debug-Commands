@@ -31,6 +31,7 @@ namespace FFXVCharacterSwitcher
 
             //server = EasyHook.RemoteHooking.IpcConnectClient<FFXVHook.ServerInterface>(channelName);
 
+            Console.WriteLine("Sending switch character");
             server?.SwitchCharacter(index);
         }
 
@@ -72,13 +73,12 @@ namespace FFXVCharacterSwitcher
             Console.WriteLine(InjectionLibrary);
 
             EasyHook.RemoteHooking.Inject(targetPID, InjectionLibrary, InjectionLibrary, channelName);
+            server = EasyHook.RemoteHooking.IpcConnectClient<FFXVHook.ServerInterface>(channelName);
         }
 
         private void Disconnect_Click(object sender, RoutedEventArgs e)
         {
-            server = EasyHook.RemoteHooking.IpcConnectClient<FFXVHook.ServerInterface>(channelName);
-
-            if (server != null) server.Disconnect();
+            server?.Disconnect();
         }
     }
 }

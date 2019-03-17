@@ -81,13 +81,16 @@ namespace FFXVHook
             _server.ReportMessage("Collected OnSelectPlayerChange *this: " + OnSelectPlayerChangeThis.ToString("X"));
 
             //Set toggleAllOpenMode to allow character switching outside of battle
-            UIntPtr isAllOpenForDegugMode = (UIntPtr)(OnSelectPlayerChangeThis + 0xC8);
+            UInt64 isAllOpenForDegugMode = (UInt64)(OnSelectPlayerChangeThis + 0xC8);
 
             _server.ReportMessage("Setting isAllOpenForDebugMode at " + isAllOpenForDegugMode.ToString());
 
             unsafe
             {
-                *((bool *)isAllOpenForDegugMode.ToPointer()) = true;
+                _server.ReportMessage("isAllOpenForDebugMode: " + *(bool *)isAllOpenForDegugMode);
+                * ((bool *)isAllOpenForDegugMode) = true;
+                _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
+
             }
 
             //Call it and switch to the guest
@@ -130,6 +133,18 @@ namespace FFXVHook
     
         public void SwitchCharacter(int index)
         {
+            UInt64 isAllOpenForDegugMode = (UInt64)(OnSelectPlayerChangeThis + 0xC8);
+            UInt64 isAllowNonBattle = (UInt64)(OnSelectPlayerChangeThis + 0xCA);
+            unsafe
+            {
+                _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
+                *((bool*)isAllOpenForDegugMode) = true;
+                _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
+
+                _server.ReportMessage("isAllowNonBattle: " + *(bool*)isAllowNonBattle);
+                *((bool*)isAllowNonBattle) = true;
+                _server.ReportMessage("isAllowNonBattle: " + *(bool*)isAllowNonBattle);
+            }
             _server.ReportMessage("Changing character to index " + index);
             FunctionImports.OnSelectPlayerChangeMenuFunc(OnSelectPlayerChangeThis, index);
         }

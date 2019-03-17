@@ -48,7 +48,7 @@ namespace FFXVHook
 
         public void SwitchCharacter(int index)
         {
-            Console.WriteLine("Sending character switch");
+            Console.WriteLine("Received character switch");
             otherServer.SwitchCharacter(index);
         }
 
