@@ -99,7 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EasyHook">
-      <Version>2.7.5870.9</Version>
+      <Version>2.7.6684</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

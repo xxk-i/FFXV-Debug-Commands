@@ -12,8 +12,6 @@ namespace FFXVHook
     {
         public static InjectionEntryPoint sInstance = null;
 
-        UInt64 OnSelectPlayerChangeThis;
-
         ServerInterface _server = null;
         Queue<String> _messageQueue = new Queue<string>();
 
@@ -34,7 +32,7 @@ namespace FFXVHook
             //Stand up a server in our process so we can know when to disconnect
             try
             {
-                EasyHook.RemoteHooking.IpcCreateServer<OtherServer>(ref channelName2, System.Runtime.Remoting.WellKnownObjectMode.Singleton);
+                EasyHook.RemoteHooking.IpcCreateServer<DLLServer>(ref channelName2, System.Runtime.Remoting.WellKnownObjectMode.Singleton);
             }
             catch (Exception e)
             {
@@ -53,7 +51,7 @@ namespace FFXVHook
         //then calls the original function
         void OnSelectPlayerChangeMenu_Hook(UInt64 ptrPlayerChangeManager, int index)
         {
-            OnSelectPlayerChangeThis = ptrPlayerChangeManager;
+            UInt64 OnSelectPlayerChangeThis = ptrPlayerChangeManager;
             FunctionImports.OnSelectPlayerChangeMenuFunc(ptrPlayerChangeManager, index);
         }
         #endregion
@@ -68,35 +66,6 @@ namespace FFXVHook
 
             //Activate hooks
             OnSelectPlayerChangeMenuHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
-
-            //Collect OnSelectPlayerChangeThis for calling OnSelectPlayerChangeMenu
-            OnSelectPlayerChangeThis = FunctionImports.GetPlayerChangeManagerFunc();
-
-            /*
-             * 
-             * TODO TODO TODO TODO
-             * Enable option in debug struct to allow swtiching to bros at any point
-             * 
-             */
-            _server.ReportMessage("Collected OnSelectPlayerChange *this: " + OnSelectPlayerChangeThis.ToString("X"));
-
-            //Set toggleAllOpenMode to allow character switching outside of battle
-            UInt64 isAllOpenForDegugMode = (UInt64)(OnSelectPlayerChangeThis + 0xC8);
-
-            _server.ReportMessage("Setting isAllOpenForDebugMode at " + isAllOpenForDegugMode.ToString());
-
-            unsafe
-            {
-                _server.ReportMessage("isAllOpenForDebugMode: " + *(bool *)isAllOpenForDegugMode);
-                * ((bool *)isAllOpenForDegugMode) = true;
-                _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
-
-            }
-
-            //Call it and switch to the guest
-            FunctionImports.OnSelectPlayerChangeMenuFunc(OnSelectPlayerChangeThis, 3);
-            //TODO log this in GUI console tab
-            //_server.ReportMessage("Created correctly? Check: " + (FunctionImports.modBase + 0x8BEF10).ToString("X"));
 
             try
             {
@@ -133,10 +102,14 @@ namespace FFXVHook
     
         public void SwitchCharacter(int index)
         {
-            UInt64 isAllOpenForDegugMode = (UInt64)(OnSelectPlayerChangeThis + 0xC8);
-            UInt64 isAllowNonBattle = (UInt64)(OnSelectPlayerChangeThis + 0xCA);
+            //Collect OnSelectPlayerChangeThis for calling OnSelectPlayerChangeMenu
+            UInt64 onSelectPlayerChangeThis = FunctionImports.GetPlayerChangeManagerFunc();
+
+            UInt64 isAllOpenForDegugMode = (onSelectPlayerChangeThis + 0xC8);
+            UInt64 isAllowNonBattle = (onSelectPlayerChangeThis + 0xCA);
             unsafe
             {
+                //Both of these bools must be set or else game will force character to switch back
                 _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
                 *((bool*)isAllOpenForDegugMode) = true;
                 _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
@@ -146,9 +119,15 @@ namespace FFXVHook
                 _server.ReportMessage("isAllowNonBattle: " + *(bool*)isAllowNonBattle);
             }
             _server.ReportMessage("Changing character to index " + index);
-            FunctionImports.OnSelectPlayerChangeMenuFunc(OnSelectPlayerChangeThis, index);
+            FunctionImports.OnSelectPlayerChangeMenuFunc(onSelectPlayerChangeThis, index);
         }
         
+        public void SwitchCharacterCustom(UInt64 customHandle)
+        {
+            UInt64 actorManagerThis = FunctionImports.dbGetActorManagerInstanceFunc();
+            FunctionImports.dbSetUserControlActorFunc(actorManagerThis, customHandle, true, false, true); 
+        }
+
         public void Disconnect()
         {
             sInstance = null;
@@ -160,7 +139,7 @@ namespace FFXVHook
         }
     }
 
-    public class OtherServer : MarshalByRefObject
+    public class DLLServer : MarshalByRefObject
     {
         public void OtherDisconnect()
         {
@@ -170,6 +149,11 @@ namespace FFXVHook
         public void SwitchCharacter(int index)
         {
             InjectionEntryPoint.sInstance?.SwitchCharacter(index);
+        }
+
+        public void SwitchCharacterCustom(UInt64 customHandle)
+        {
+            InjectionEntryPoint.sInstance?.SwitchCharacterCustom(customHandle);
         }
 
         public void DispatchCommand(string command)

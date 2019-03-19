@@ -9,14 +9,14 @@ namespace FFXVHook
     public class ServerInterface : MarshalByRefObject
     {
         string otherChannel;
-        OtherServer otherServer;
+        DLLServer dllServer;
 
         //Called when DLL is injected
         public void IsInstalled(int clientPID, string otherChannel) 
         {
             //this.Injection = Injection;
             this.otherChannel = otherChannel;
-            otherServer = EasyHook.RemoteHooking.IpcConnectClient<OtherServer>(otherChannel);
+            dllServer = EasyHook.RemoteHooking.IpcConnectClient<DLLServer>(otherChannel);
             Console.WriteLine("Successfully injected into process {0}.\r\n", clientPID);
         }
 
@@ -49,10 +49,16 @@ namespace FFXVHook
         public void SwitchCharacter(int index)
         {
             Console.WriteLine("Received character switch");
-            otherServer.SwitchCharacter(index);
+            dllServer.SwitchCharacter(index);
         }
 
-        public void sendCommand(string command)
+        public void SwitchCharacterCustom(UInt64 customHandle)
+        {
+            Console.WriteLine("Received custom character switch!");
+            dllServer.SwitchCharacterCustom(customHandle);
+        }
+
+        public void SendCommand(string command)
         {
         }
 
@@ -60,7 +66,7 @@ namespace FFXVHook
         public void Disconnect()
         {
             Console.WriteLine("Receieved disconnect message");
-            otherServer.OtherDisconnect();
+            dllServer.OtherDisconnect();
         }
     }
 }

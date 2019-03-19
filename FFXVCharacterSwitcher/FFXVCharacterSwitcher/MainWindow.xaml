@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="Final Fantasy XV Character Switcher" Height="350" Width="525">
     <Grid>
-        <CheckBox x:Name="CustomHandleCheckBox" Content="Use Custom Handle" HorizontalAlignment="Left" Margin="20,25,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <CheckBox x:Name="CustomHandleCheckBox" Content="Use Custom Handle" HorizontalAlignment="Left" Margin="20,25,0,0" VerticalAlignment="Top" Checked="CustomHandle_Checked" Unchecked="CustomHandle_Unchecked"/>
+        <CheckBox x:Name="DebugCheckBox" Content="Debug build" HorizontalAlignment="Left" Margin="342,25,0,0" VerticalAlignment="Top" Height="20" Width="98" Checked="DebugBuild_Checked" IsChecked="True"/>
 
         <ComboBox x:Name="PartyBox" Text="Character to Switch to..." HorizontalAlignment="Left" Margin="20,60,0,0" VerticalAlignment="Top" Width="220" Height="25" SelectionChanged="PartyBox_SelectionChanged">
             <ComboBoxItem IsSelected="True">Noctis</ComboBoxItem>
@@ -30,7 +31,7 @@
             </ComboBox.Style>
         </ComboBox>
 
-        <TextBox x:Name="textBox" HorizontalAlignment="Left" Margin="20,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="25" Width="220">
+        <TextBox x:Name="CustomHandleBox" HorizontalAlignment="Left" Margin="20,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="25" Width="220">
             <TextBox.Style>
                 <Style TargetType="TextBox">
                     <Style.Triggers>
@@ -47,5 +48,6 @@
         <Button x:Name="PartyButton" Content="Switch To Party Member" HorizontalAlignment="Left" Margin="340,60,0,0" VerticalAlignment="Top" Width="140" Height="25" Click="PartyButton_Click"/>
         <Button x:Name="InjectHacks" Content="INJECT THE HACKS" HorizontalAlignment="Left" Margin="60,160,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="InjectHacks_Click"/>
         <Button x:Name="DisconnectButton" Content="Disconnect" HorizontalAlignment="Left" Margin="60,240,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="Disconnect_Click"/>
+        
     </Grid>
 </Window>
