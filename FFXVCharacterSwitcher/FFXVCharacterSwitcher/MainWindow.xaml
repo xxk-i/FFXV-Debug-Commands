@@ -46,8 +46,8 @@
             </TextBox.Style>
         </TextBox>
         <Button x:Name="PartyButton" Content="Switch To Party Member" HorizontalAlignment="Left" Margin="340,60,0,0" VerticalAlignment="Top" Width="140" Height="25" Click="PartyButton_Click"/>
-        <Button x:Name="InjectHacks" Content="INJECT THE HACKS" HorizontalAlignment="Left" Margin="60,160,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="InjectHacks_Click"/>
+        <Button x:Name="InjectHacks" Content="Inject Into FFXV" HorizontalAlignment="Left" Margin="60,160,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="InjectHacks_Click"/>
         <Button x:Name="DisconnectButton" Content="Disconnect" HorizontalAlignment="Left" Margin="60,240,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="Disconnect_Click"/>
-        
+
     </Grid>
 </Window>

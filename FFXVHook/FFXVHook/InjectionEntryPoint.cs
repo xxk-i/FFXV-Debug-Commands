@@ -112,11 +112,11 @@ namespace FFXVHook
                 //Both of these bools must be set or else game will force character to switch back
                 _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
                 *((bool*)isAllOpenForDegugMode) = true;
-                _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
+                _server.ReportMessage("isAllOpenForDebugMode changed to: " + *(bool*)isAllOpenForDegugMode);
 
                 _server.ReportMessage("isAllowNonBattle: " + *(bool*)isAllowNonBattle);
                 *((bool*)isAllowNonBattle) = true;
-                _server.ReportMessage("isAllowNonBattle: " + *(bool*)isAllowNonBattle);
+                _server.ReportMessage("isAllowNonBattle changed to: " + *(bool*)isAllowNonBattle);
             }
             _server.ReportMessage("Changing character to index " + index);
             FunctionImports.OnSelectPlayerChangeMenuFunc(onSelectPlayerChangeThis, index);

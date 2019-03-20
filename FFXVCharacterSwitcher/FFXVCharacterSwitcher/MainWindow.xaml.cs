@@ -58,6 +58,7 @@ namespace FFXVCharacterSwitcher
             bCustomHandle = false;
         }
 
+        //Probably will be removed later, as it can be checked automatically
         private void DebugBuild_Checked(object send, RoutedEventArgs e)
         {
             bDebug = true;
@@ -65,7 +66,7 @@ namespace FFXVCharacterSwitcher
 
         private void DebugBuild_Unchecked(object send, RoutedEventArgs e)
         {
-            bDebug = true;
+            bDebug = false;
         }
 
         private void InjectHacks_Click(object sender, RoutedEventArgs e)
