@@ -8,5 +8,5 @@ Currently unstable, do not use.
 
 Utilizes EasyHook for DLL injection and function hook management.
 
-# USAGE#
+# USAGE #
 Launch FFXV and load a save game, then launch FFXVCharacterSwitcher and click the Inject button.
