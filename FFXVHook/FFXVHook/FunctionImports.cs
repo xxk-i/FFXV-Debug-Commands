@@ -49,7 +49,7 @@ namespace FFXVHook
 
 
         //Debug Offsets
-        //For debug, seems to be IDA file offset + C00
+        //For debug, seems to be IDA file offset + 0xC00
         public static IntPtr dbOnSelectPlayerChangeMenuAddr = (modBase + 0x8BEF10);
         public static IntPtr dbSetUserControlActorAddr = (modBase + 0x5CD1860);
 
@@ -58,8 +58,12 @@ namespace FFXVHook
 
 
         //Release Offsets
-        public static IntPtr OnSelectPlayerChangeMenuAddr = (modBase + 0x1);
-        public static IntPtr GetPlayerChangeManagerAddr = (modBase + 0x1);
+        //Also seems to be IDA file offset + 0xC00
+        public static IntPtr OnSelectPlayerChangeMenuAddr = (modBase + 0x888E80);  //IDA file offset 0x11C6A60
+        public static IntPtr GetPlayerChangeManagerAddr = (modBase + 0xB7C60);
+
+        public static IntPtr SetUserControlActorAddr = (modBase + 0x4F23460);   //IDA file offset 0x4F23460
+        public static IntPtr GetActorManagerInstanceAddr = (modBase + 0x1);
 
 
 
@@ -73,7 +77,6 @@ namespace FFXVHook
 
         //Original release functions
         public static OnSelectPlayerChangeMenu OnSelectPlayerChangeMenuFunc = Marshal.GetDelegateForFunctionPointer<OnSelectPlayerChangeMenu>(OnSelectPlayerChangeMenuAddr);
-
         public static GetPlayerChangeManager GetPlayerChangeManagerFunc = Marshal.GetDelegateForFunctionPointer<GetPlayerChangeManager>(GetPlayerChangeManagerAddr);
 
     }

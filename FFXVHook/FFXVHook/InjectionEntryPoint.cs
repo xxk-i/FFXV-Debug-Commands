@@ -47,6 +47,8 @@ namespace FFXVHook
 
         #region OnSelectPlayerChangeMenu_Hook
 
+
+        //Currently unnecessary, see GetPlayerChangeManager
         //OnSelectPlayerChangeMenu_Hook captures the *this pointer to save for use later
         //then calls the original function
         void OnSelectPlayerChangeMenu_Hook(UInt64 ptrPlayerChangeManager, int index)
@@ -112,11 +114,11 @@ namespace FFXVHook
                 //Both of these bools must be set or else game will force character to switch back
                 _server.ReportMessage("isAllOpenForDebugMode: " + *(bool*)isAllOpenForDegugMode);
                 *((bool*)isAllOpenForDegugMode) = true;
-                _server.ReportMessage("isAllOpenForDebugMode changed to: " + *(bool*)isAllOpenForDegugMode);
+                _server.ReportMessage("isAllOpenForDebugMode changed to: " + *(bool*)isAllOpenForDegugMode + " at " + isAllOpenForDegugMode.ToString());
 
                 _server.ReportMessage("isAllowNonBattle: " + *(bool*)isAllowNonBattle);
                 *((bool*)isAllowNonBattle) = true;
-                _server.ReportMessage("isAllowNonBattle changed to: " + *(bool*)isAllowNonBattle);
+                _server.ReportMessage("isAllowNonBattle changed to: " + *(bool*)isAllowNonBattle + " at " + isAllowNonBattle.ToString());
             }
             _server.ReportMessage("Changing character to index " + index);
             FunctionImports.OnSelectPlayerChangeMenuFunc(onSelectPlayerChangeThis, index);
