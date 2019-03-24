@@ -15,8 +15,7 @@ namespace FFXVCharacterSwitcher
         FFXVHook.ServerInterface server;
         private string channelName;
 
-        bool bCustomHandle = false;
-        bool bDebug = true;
+        bool CustomHandle = false;
 
         public MainWindow()
         {
@@ -32,7 +31,7 @@ namespace FFXVCharacterSwitcher
         {
             int index;
 
-            if (bCustomHandle)
+            if (CustomHandle)
             {
                 UInt64 customHandle = Convert.ToUInt64(CustomHandleBox.Text);
                 Console.WriteLine("Sending custom switch character");
@@ -50,23 +49,23 @@ namespace FFXVCharacterSwitcher
 
         private void CustomHandle_Checked(object sender, RoutedEventArgs e)
         {
-            bCustomHandle = true;
+            CustomHandle = true;
         }
 
         private void CustomHandle_Unchecked(object send, RoutedEventArgs e)
         {
-            bCustomHandle = false;
+            CustomHandle = false;
         }
 
         //Probably will be removed later, as it can be checked automatically
         private void DebugBuild_Checked(object send, RoutedEventArgs e)
         {
-            bDebug = true;
+            server?.SetDebug(true);
         }
 
         private void DebugBuild_Unchecked(object send, RoutedEventArgs e)
         {
-            bDebug = false;
+            server?.SetDebug(false);
         }
 
         private void InjectHacks_Click(object sender, RoutedEventArgs e)
@@ -98,6 +97,7 @@ namespace FFXVCharacterSwitcher
 
             EasyHook.RemoteHooking.Inject(targetPID, InjectionLibrary, InjectionLibrary, channelName);
             server = EasyHook.RemoteHooking.IpcConnectClient<FFXVHook.ServerInterface>(channelName);
+            server.SetDebug((bool)DebugCheckBox.IsChecked);
         }
 
         private void Disconnect_Click(object sender, RoutedEventArgs e)

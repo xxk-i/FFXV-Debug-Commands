@@ -8,7 +8,7 @@
         Title="Final Fantasy XV Character Switcher" Height="350" Width="525">
     <Grid>
         <CheckBox x:Name="CustomHandleCheckBox" Content="Use Custom Handle" HorizontalAlignment="Left" Margin="20,25,0,0" VerticalAlignment="Top" Checked="CustomHandle_Checked" Unchecked="CustomHandle_Unchecked"/>
-        <CheckBox x:Name="DebugCheckBox" Content="Debug build" HorizontalAlignment="Left" Margin="342,25,0,0" VerticalAlignment="Top" Height="20" Width="98" Checked="DebugBuild_Checked" IsChecked="True"/>
+        <CheckBox x:Name="DebugCheckBox" Content="Debug FFXV build" HorizontalAlignment="Left" Margin="342,25,0,0" VerticalAlignment="Top" Height="20" Width="118" Checked="DebugBuild_Checked" IsChecked="True"/>
 
         <ComboBox x:Name="PartyBox" Text="Character to Switch to..." HorizontalAlignment="Left" Margin="20,60,0,0" VerticalAlignment="Top" Width="220" Height="25" SelectionChanged="PartyBox_SelectionChanged">
             <ComboBoxItem IsSelected="True">Noctis</ComboBoxItem>

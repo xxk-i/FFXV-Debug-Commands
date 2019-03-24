@@ -8,18 +8,21 @@ using System.Windows.Forms;
 
 namespace FFXVHook
 {
+
     public class InjectionEntryPoint : EasyHook.IEntryPoint
     {
         public static InjectionEntryPoint sInstance = null;
 
         ServerInterface _server = null;
         Queue<String> _messageQueue = new Queue<string>();
+        FunctionImports functions;
 
         int clientPID = EasyHook.RemoteHooking.GetCurrentProcessId();
         string channelName2 = null;
 
         //Hooks
-        EasyHook.LocalHook OnSelectPlayerChangeMenuHook;
+        //EasyHook.LocalHook OnSelectPlayerChangeMenuHook;
+        EasyHook.LocalHook PlayerChangeManagerIsEnabledHook;
 
         //Connects client and pings server to show injected DLL is responsive
         public InjectionEntryPoint(EasyHook.RemoteHooking.IContext context, string channelName)
@@ -42,32 +45,39 @@ namespace FFXVHook
 
         ~InjectionEntryPoint()
         {
-            _server.ReportMessage("no dont kill me");
+            _server.ReportMessage("Injection removed by game");
         }
 
         #region OnSelectPlayerChangeMenu_Hook
-
-
         //Currently unnecessary, see GetPlayerChangeManager
         //OnSelectPlayerChangeMenu_Hook captures the *this pointer to save for use later
         //then calls the original function
         void OnSelectPlayerChangeMenu_Hook(UInt64 ptrPlayerChangeManager, int index)
         {
             UInt64 OnSelectPlayerChangeThis = ptrPlayerChangeManager;
-            FunctionImports.OnSelectPlayerChangeMenuFunc(ptrPlayerChangeManager, index);
+            functions.OnSelectPlayerChangeMenuFunc(ptrPlayerChangeManager, index);
         }
         #endregion
+
+        bool PlayerChangeManagerIsEnabled_Hook(UInt64 ptrPlayerChangeManager)
+        {
+            return true;
+        }
 
         public void Run(EasyHook.RemoteHooking.IContext context, string channelName)
         {
             _server.ReportMessage("InjectionEntryPoint Run:");
             _server.IsInstalled(clientPID, channelName2);
 
+            functions = new FunctionImports(_server.GetDebug());
+
             //Install hooks
-            OnSelectPlayerChangeMenuHook = EasyHook.LocalHook.Create(FunctionImports.OnSelectPlayerChangeMenuAddr, new FunctionImports.OnSelectPlayerChangeMenu(OnSelectPlayerChangeMenu_Hook), null);
+            PlayerChangeManagerIsEnabledHook = EasyHook.LocalHook.Create(functions.dbPlayerChangeManagerIsEnabledAddr, new FunctionImports.PlayerChangeManagerIsEnabled(PlayerChangeManagerIsEnabled_Hook), null);
+            //OnSelectPlayerChangeMenuHook = EasyHook.LocalHook.Create(FunctionImports.OnSelectPlayerChangeMenuAddr, new FunctionImports.OnSelectPlayerChangeMenu(OnSelectPlayerChangeMenu_Hook), null);
 
             //Activate hooks
-            OnSelectPlayerChangeMenuHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
+            PlayerChangeManagerIsEnabledHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
+            //OnSelectPlayerChangeMenuHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
 
             try
             {
@@ -105,10 +115,14 @@ namespace FFXVHook
         public void SwitchCharacter(int index)
         {
             //Collect OnSelectPlayerChangeThis for calling OnSelectPlayerChangeMenu
-            UInt64 onSelectPlayerChangeThis = FunctionImports.GetPlayerChangeManagerFunc();
+            UInt64 onSelectPlayerChangeThis = functions.GetPlayerChangeManagerFunc();
 
             UInt64 isAllOpenForDegugMode = (onSelectPlayerChangeThis + 0xC8);
             UInt64 isAllowNonBattle = (onSelectPlayerChangeThis + 0xCA);
+
+            /*
+            This is debug version only, offsets are different or bools don't exist in release.
+            For same effect use the PlayerChangeManagerIsEnabled hook to always return true.
             unsafe
             {
                 //Both of these bools must be set or else game will force character to switch back
@@ -120,14 +134,17 @@ namespace FFXVHook
                 *((bool*)isAllowNonBattle) = true;
                 _server.ReportMessage("isAllowNonBattle changed to: " + *(bool*)isAllowNonBattle + " at " + isAllowNonBattle.ToString());
             }
+            */
+
             _server.ReportMessage("Changing character to index " + index);
-            FunctionImports.OnSelectPlayerChangeMenuFunc(onSelectPlayerChangeThis, index);
+            functions.OnSelectPlayerChangeMenuFunc(onSelectPlayerChangeThis, index);
+            _server.ReportMessage("after OnSelectPlayerChangeMenuFunc");
         }
         
         public void SwitchCharacterCustom(UInt64 customHandle)
         {
-            UInt64 actorManagerThis = FunctionImports.dbGetActorManagerInstanceFunc();
-            FunctionImports.dbSetUserControlActorFunc(actorManagerThis, customHandle, true, false, true); 
+            UInt64 actorManagerThis = functions.GetActorManagerInstanceFunc();
+            functions.SetUserControlActorFunc(actorManagerThis, customHandle, true, false, true); 
         }
 
         public void Disconnect()
@@ -136,7 +153,7 @@ namespace FFXVHook
             _server.ReportMessage("Uninstalling and releasing");
 
             // Remove hooks
-            OnSelectPlayerChangeMenuHook.Dispose();
+            //OnSelectPlayerChangeMenuHook.Dispose();
             EasyHook.LocalHook.Release();
         }
     }

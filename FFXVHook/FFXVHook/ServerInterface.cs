@@ -10,6 +10,7 @@ namespace FFXVHook
     {
         string otherChannel;
         DLLServer dllServer;
+        bool debug;
 
         //Called when DLL is injected
         public void IsInstalled(int clientPID, string otherChannel) 
@@ -67,6 +68,17 @@ namespace FFXVHook
         {
             Console.WriteLine("Receieved disconnect message");
             dllServer.OtherDisconnect();
+        }
+
+        public void SetDebug(bool option)
+        {
+            debug = option;
+            Console.WriteLine("DEBUG set to " + option);
+        }
+
+        public bool GetDebug()
+        {
+            return debug;
         }
     }
 }
