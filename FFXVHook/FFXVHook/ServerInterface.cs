@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FFXVHook
 {
@@ -28,6 +29,12 @@ namespace FFXVHook
             {
                 Console.WriteLine(messages);
             }
+        }
+
+        //Reports message through messagebox
+        public void ReportUrgentMessage(string message)
+        {
+            MessageBox.Show(message);
         }
 
         public void ReportMessage(string message)
@@ -61,6 +68,8 @@ namespace FFXVHook
 
         public void SendCommand(string command)
         {
+            Console.WriteLine("COMMNAND: " + command);
+            dllServer.DispatchCommand(command);
         }
 
 

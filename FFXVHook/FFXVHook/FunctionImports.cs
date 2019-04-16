@@ -48,26 +48,30 @@ namespace FFXVHook
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Auto, SetLastError = true)]
         public delegate UInt64 GetActorManagerInstance();
 
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Auto, SetLastError = true)]
+        public delegate UInt64 GetJobCommandManagerInstance();
+
         #endregion Engine Function Delegates
 
 
         #region Debug Offsets
         //For debug, seems to be IDA file offset + 0xC00
         public static IntPtr dbOnSelectPlayerChangeMenuAddr = (modBase + 0x8BEF10);
-        public  IntPtr dbPlayerChangeManagerIsEnabledAddr = (modBase + 0x8BE4C0);
+        public IntPtr dbPlayerChangeManagerIsEnabledAddr = (modBase + 0x8BE4C0);
         public static IntPtr dbSetUserControlActorAddr = (modBase + 0x5CD1860);
 
         public static IntPtr dbGetPlayerChangeManagerAddr = (modBase + 0xC8CA0);
         public static IntPtr dbGetActorManagerInstanceAddr = (modBase + 0x480080);
+        public static IntPtr dbGetJobCommandManagerAddr = (modBase + 0x22C1F0);
         #endregion Debug Offsets
 
         #region Release Offsets
         //Also seems to be IDA file offset + 0xC00
-        public static IntPtr OnSelectPlayerChangeMenuAddr = (modBase + 0x888E80);  //IDA file offset 0x11C6A60
+        public static IntPtr OnSelectPlayerChangeMenuAddr = (modBase + 0x898F50);  //IDA file offset 0x898350
         public IntPtr PlayerChangeManagerIsEnabledAddr = (modBase + 0x1);
-        public static IntPtr GetPlayerChangeManagerAddr = (modBase + 0xB7C60);
-
         public static IntPtr SetUserControlActorAddr = (modBase + 0x4F23460);   //IDA file offset 0x4F23460
+
+        public static IntPtr GetPlayerChangeManagerAddr = (modBase + 0xB7C60);
         public static IntPtr GetActorManagerInstanceAddr = (modBase + 0x1);
         #endregion Release Offsets
 
@@ -78,6 +82,7 @@ namespace FFXVHook
 
         public GetActorManagerInstance GetActorManagerInstanceFunc;
         public GetPlayerChangeManager GetPlayerChangeManagerFunc;
+        public GetJobCommandManagerInstance GetJobCommandManagerFunc;
         #endregion
 
         public FunctionImports(bool debug)
@@ -90,6 +95,7 @@ namespace FFXVHook
 
                 GetPlayerChangeManagerFunc = Marshal.GetDelegateForFunctionPointer<GetPlayerChangeManager>(dbGetPlayerChangeManagerAddr);
                 GetActorManagerInstanceFunc = Marshal.GetDelegateForFunctionPointer<GetActorManagerInstance>(dbGetActorManagerInstanceAddr);
+                GetJobCommandManagerFunc = Marshal.GetDelegateForFunctionPointer<GetJobCommandManagerInstance>(dbGetJobCommandManagerAddr);
             }
             
             else
@@ -101,14 +107,6 @@ namespace FFXVHook
                 GetPlayerChangeManagerFunc = Marshal.GetDelegateForFunctionPointer<GetPlayerChangeManager>(GetPlayerChangeManagerAddr);
                 GetActorManagerInstanceFunc = Marshal.GetDelegateForFunctionPointer<GetActorManagerInstance>(GetActorManagerInstanceAddr);
             }
-
-            /*
-            OnSelectPlayerChangeMenuFunc = Marshal.GetDelegateForFunctionPointer<OnSelectPlayerChangeMenu>(dbOnSelectPlayerChangeMenuAddr);
-            SetUserControlActorFunc = Marshal.GetDelegateForFunctionPointer<SetUserControlActor>(dbSetUserControlActorAddr);
-
-            GetPlayerChangeManagerFunc = Marshal.GetDelegateForFunctionPointer<GetPlayerChangeManager>(dbGetPlayerChangeManagerAddr);
-            GetActorManagerInstanceFunc = Marshal.GetDelegateForFunctionPointer<GetActorManagerInstance>(dbGetActorManagerInstanceAddr);
-            */
         }
     }
 }

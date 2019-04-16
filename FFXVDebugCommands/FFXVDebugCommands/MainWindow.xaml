@@ -6,48 +6,62 @@
         xmlns:local="clr-namespace:FFXVCharacterSwitcher"
         mc:Ignorable="d"
         Title="Final Fantasy XV Character Switcher" Height="350" Width="525">
-    <Grid>
-        <CheckBox x:Name="CustomHandleCheckBox" Content="Use Custom Handle" HorizontalAlignment="Left" Margin="20,25,0,0" VerticalAlignment="Top" Checked="CustomHandle_Checked" Unchecked="CustomHandle_Unchecked"/>
-        <CheckBox x:Name="DebugCheckBox" Content="Debug FFXV build" HorizontalAlignment="Left" Margin="342,25,0,0" VerticalAlignment="Top" Height="20" Width="118" Checked="DebugBuild_Checked" IsChecked="True"/>
+    <TabControl>
+        <TabItem Header="Inject">
+            <Grid>
 
-        <ComboBox x:Name="PartyBox" Text="Character to Switch to..." HorizontalAlignment="Left" Margin="20,60,0,0" VerticalAlignment="Top" Width="220" Height="25" SelectionChanged="PartyBox_SelectionChanged">
-            <ComboBoxItem IsSelected="True">Noctis</ComboBoxItem>
-            <ComboBoxItem>Gladiolus</ComboBoxItem>
-            <ComboBoxItem>Prompto</ComboBoxItem>
-            <ComboBoxItem>Ignis</ComboBoxItem>
-            <ComboBoxItem>Guest</ComboBoxItem>
+                <CheckBox x:Name="DebugCheckBox" Content="Debug FFXV build" HorizontalAlignment="Left" Margin="200,53,0,0" VerticalAlignment="Top" Height="20" Width="118" Checked="DebugBuild_Checked" IsChecked="True"/>
+                <Button x:Name="InjectHacks" Content="Inject Into FFXV" HorizontalAlignment="Left" Margin="60,160,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="InjectHacks_Click"/>
+                <Button x:Name="DisconnectButton" Content="Disconnect" HorizontalAlignment="Left" Margin="60,223,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="Disconnect_Click"/>
 
-            <ComboBox.Style>
-                <Style TargetType="ComboBox">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=CustomHandleCheckBox, Path=IsChecked}" Value="True">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ElementName=CustomHandleCheckBox, Path=IsChecked}" Value="False">
-                            <Setter Property="Visibility" Value="Visible"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ComboBox.Style>
-        </ComboBox>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Party">
+            <Grid>
+                <CheckBox x:Name="CustomHandleCheckBox" Content="Use Custom Handle" HorizontalAlignment="Left" Margin="20,25,0,0" VerticalAlignment="Top" Checked="CustomHandle_Checked" Unchecked="CustomHandle_Unchecked"/>
+                <ComboBox x:Name="PartyBox" Text="Character to Switch to..." HorizontalAlignment="Left" Margin="20,60,0,0" VerticalAlignment="Top" Width="220" Height="25" SelectionChanged="PartyBox_SelectionChanged">
+                    <ComboBoxItem IsSelected="True">Noctis</ComboBoxItem>
+                    <ComboBoxItem>Gladiolus</ComboBoxItem>
+                    <ComboBoxItem>Prompto</ComboBoxItem>
+                    <ComboBoxItem>Ignis</ComboBoxItem>
+                    <ComboBoxItem>Guest</ComboBoxItem>
 
-        <TextBox x:Name="CustomHandleBox" HorizontalAlignment="Left" Margin="20,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="25" Width="220">
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=CustomHandleCheckBox, Path=IsChecked}" Value="True">
-                            <Setter Property="Visibility" Value="Visible"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ElementName=CustomHandleCheckBox, Path=IsChecked}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
-        </TextBox>
-        <Button x:Name="PartyButton" Content="Switch To Party Member" HorizontalAlignment="Left" Margin="340,60,0,0" VerticalAlignment="Top" Width="140" Height="25" Click="PartyButton_Click"/>
-        <Button x:Name="InjectHacks" Content="Inject Into FFXV" HorizontalAlignment="Left" Margin="60,160,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="InjectHacks_Click"/>
-        <Button x:Name="DisconnectButton" Content="Disconnect" HorizontalAlignment="Left" Margin="60,240,0,0" VerticalAlignment="Top" Width="380" Height="35" Click="Disconnect_Click"/>
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=CustomHandleCheckBox, Path=IsChecked}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=CustomHandleCheckBox, Path=IsChecked}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
 
-    </Grid>
+                <TextBox x:Name="CustomHandleBox" HorizontalAlignment="Left" Margin="20,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="25" Width="220">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=CustomHandleCheckBox, Path=IsChecked}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ElementName=CustomHandleCheckBox, Path=IsChecked}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <Button x:Name="PartyButton" Content="Switch To Party Member" HorizontalAlignment="Left" Margin="340,60,0,0" VerticalAlignment="Top" Width="140" Height="25" Click="PartyButton_Click"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Console">
+            <Grid>
+                <TextBox x:Name="ConsoleBox" HorizontalAlignment="Left" Height="160" Margin="40,53,0,0" TextWrapping="NoWrap" Text="highlight me" IsReadOnly="True" VerticalAlignment="Top" Width="435"/>
+
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Window>

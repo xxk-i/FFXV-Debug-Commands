@@ -45,7 +45,7 @@ namespace FFXVHook
 
         ~InjectionEntryPoint()
         {
-            _server.ReportMessage("Injection removed by game");
+            _server.ReportUrgentMessage("Injection removed by game, re-inject!");
         }
 
         #region OnSelectPlayerChangeMenu_Hook
@@ -147,6 +147,12 @@ namespace FFXVHook
             functions.SetUserControlActorFunc(actorManagerThis, customHandle, true, false, true); 
         }
 
+        public void SetGuestActor(UInt64 actor)
+        {
+            UInt64 JobCommandManagerThis = functions.GetJobCommandManagerThis()
+            functions.SetGuestActor(JobCommandManagerThis, actor);
+        }
+
         public void Disconnect()
         {
             sInstance = null;
@@ -177,6 +183,16 @@ namespace FFXVHook
 
         public void DispatchCommand(string command)
         {
+            string[] cmd = command.Split();
+
+            string mainCommand = cmd[0];
+
+            switch(mainCommand)
+            {
+                case mainCommand.("SetPartyActor"):
+                    InjectionEntryPoint.sInstance?.SetPartyActor();
+                    break;
+            }
         }
     }
 }

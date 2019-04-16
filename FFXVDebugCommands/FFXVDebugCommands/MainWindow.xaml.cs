@@ -20,6 +20,7 @@ namespace FFXVCharacterSwitcher
         public MainWindow()
         {
             InitializeComponent();
+            Console.SetOut(new ControlWriter(ConsoleBox));
         }
 
         private void PartyBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
