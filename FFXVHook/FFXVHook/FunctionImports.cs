@@ -25,6 +25,9 @@ namespace FFXVHook
         [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Auto, SetLastError = true)]
         public delegate bool PlayerChangeManagerIsEnabled(UInt64 ptrPlayerChangeManager);
 
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Auto, SetLastError = true)]
+        public delegate void PlayerChangeManagerUpdate(UInt64 ptrPlayerChangeManager, UInt64 deltaTime);
+
         //SetUserControlActor does not enable attacking, do not bother using with bros
         //Game calls from debug menu with following bools set:
         //  bChangePadType = true
@@ -33,8 +36,22 @@ namespace FFXVHook
         [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Auto, SetLastError = true)]
         public delegate void SetUserControlActor(UInt64 ptrActorManager, UInt64 actor, bool bChangePadType, bool bDebugPad, bool bSave);
 
-        #endregion Game Function Delegates
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Auto, SetLastError = true)]
+        public delegate void SetUserControlPlayer(UInt64 ptrActorManager, UInt64 actor);
 
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Auto, SetLastError = true)]
+        public delegate UInt64 GetPartyActor(UInt64 ptrActorManager, int party_index);
+
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Auto, SetLastError = true)]
+        public delegate UInt64 GetActorFromCharacterEntryID(UInt64 ptrActorManger, int manager_type, uint character_entry_id);
+
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Auto, SetLastError = true)]
+        public delegate UInt64 GetActorFromIndex(UInt64 ptrActorTypeManager, uint index);
+
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Auto, SetLastError = true)]
+        public delegate UInt64 GetActorTypeManager();
+
+        #endregion Game Function Delegates
 
         #region Engine Function Delegates
 
@@ -67,22 +84,34 @@ namespace FFXVHook
 
         #region Release Offsets
         //Also seems to be IDA file offset + 0xC00
-        public static IntPtr OnSelectPlayerChangeMenuAddr = (modBase + 0x898F50);  //IDA file offset 0x898350
-        public IntPtr PlayerChangeManagerIsEnabledAddr = (modBase + 0x1);
-        public static IntPtr SetUserControlActorAddr = (modBase + 0x4F23460);   //IDA file offset 0x4F23460
+        //public static IntPtr OnSelectPlayerChangeMenuAddr = (modBase + 0x898F50);  //IDA file offset 0x898350
+        public static IntPtr OnSelectPlayerChangeMenuAddr = (modBase + 0x898F70);
+        public IntPtr PlayerChangeManagerIsEnabledAddr = (modBase + 0x1082CD0);
+        public static IntPtr PlayerChangeManagerUpdateAddr = (modBase + 0x594D60);
+        //public static IntPtr SetUserControlActorAddr = (modBase + 0x4F24060);   //IDA file offset 0x4F23460
+        public static IntPtr SetUserControlActorAddr = (modBase + 0x5CA4660);
+        public static IntPtr SetUserControlPlayerAddr = (modBase + 0x5CA4C90);
 
-        public static IntPtr GetPlayerChangeManagerAddr = (modBase + 0xB7C60);
-        public static IntPtr GetActorManagerInstanceAddr = (modBase + 0x1);
+        public static IntPtr GetPartyActorAddr = (modBase + 0x5CAD4D0);
+        public static IntPtr GetPlayerChangeManagerAddr = (modBase + 0x5C9D760);
+        public static IntPtr GetActorManagerInstanceAddr = (modBase + 0x6A98AE0);
+        public static IntPtr GetActorFromCharacterEntryIDAddr = (modBase + 0x7893350);
+        public static IntPtr GetActorFromIndexAddr = (modBase + 0x1225170);
         #endregion Release Offsets
 
         #region Functions
         public OnSelectPlayerChangeMenu OnSelectPlayerChangeMenuFunc;
         public PlayerChangeManagerIsEnabled PlayerChangeManagerIsEnabledFunc;
+        public PlayerChangeManagerUpdate PlayerChangeManagerUpdateFunc;
         public SetUserControlActor SetUserControlActorFunc;
+        public SetUserControlPlayer SetUserControlPlayerFunc;
 
+        public GetActorFromCharacterEntryID GetActorFromCharacterEntryIDFunc;
+        public GetPartyActor GetPartyActorFunc;
         public GetActorManagerInstance GetActorManagerInstanceFunc;
         public GetPlayerChangeManager GetPlayerChangeManagerFunc;
         public GetJobCommandManagerInstance GetJobCommandManagerFunc;
+        public GetActorFromIndex GetActorFromIndexFunc;
         #endregion
 
         public FunctionImports(bool debug)
@@ -102,8 +131,13 @@ namespace FFXVHook
             {
                 OnSelectPlayerChangeMenuFunc = Marshal.GetDelegateForFunctionPointer<OnSelectPlayerChangeMenu>(OnSelectPlayerChangeMenuAddr);
                 PlayerChangeManagerIsEnabledFunc = Marshal.GetDelegateForFunctionPointer<PlayerChangeManagerIsEnabled>(PlayerChangeManagerIsEnabledAddr);
+                PlayerChangeManagerUpdateFunc = Marshal.GetDelegateForFunctionPointer<PlayerChangeManagerUpdate>(PlayerChangeManagerUpdateAddr);
                 SetUserControlActorFunc = Marshal.GetDelegateForFunctionPointer<SetUserControlActor>(SetUserControlActorAddr);
+                SetUserControlPlayerFunc = Marshal.GetDelegateForFunctionPointer<SetUserControlPlayer>(SetUserControlPlayerAddr);
 
+                GetActorFromIndexFunc = Marshal.GetDelegateForFunctionPointer<GetActorFromIndex>(GetActorFromIndexAddr);
+                GetActorFromCharacterEntryIDFunc = Marshal.GetDelegateForFunctionPointer<GetActorFromCharacterEntryID>(GetActorFromCharacterEntryIDAddr);
+                GetPartyActorFunc = Marshal.GetDelegateForFunctionPointer<GetPartyActor>(GetPartyActorAddr);
                 GetPlayerChangeManagerFunc = Marshal.GetDelegateForFunctionPointer<GetPlayerChangeManager>(GetPlayerChangeManagerAddr);
                 GetActorManagerInstanceFunc = Marshal.GetDelegateForFunctionPointer<GetActorManagerInstance>(GetActorManagerInstanceAddr);
             }

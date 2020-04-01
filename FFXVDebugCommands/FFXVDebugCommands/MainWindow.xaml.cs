@@ -16,11 +16,12 @@ namespace FFXVCharacterSwitcher
         private string channelName;
 
         bool CustomHandle = false;
+        bool BattleSwitch = false;
 
         public MainWindow()
         {
             InitializeComponent();
-            Console.SetOut(new ControlWriter(ConsoleBox));
+            //Console.SetOut(new ControlWriter(ConsoleBox));
         }
 
         private void PartyBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -30,7 +31,7 @@ namespace FFXVCharacterSwitcher
 
         private void PartyButton_Click(object sender, RoutedEventArgs e)
         {
-            int index;
+            int index = PartyBox.SelectedIndex;
 
             if (CustomHandle)
             {
@@ -40,12 +41,10 @@ namespace FFXVCharacterSwitcher
                 return;
             }
 
-            else index = PartyBox.SelectedIndex;
-
-            //server = EasyHook.RemoteHooking.IpcConnectClient<FFXVHook.ServerInterface>(channelName);
-
             Console.WriteLine("Sending switch character");
-            server?.SwitchCharacter(index);
+
+            if (BattleSwitch) server?.SwitchBattleCharacter(index);
+            else server?.SwitchCharacter(index);
         }
 
         private void CustomHandle_Checked(object sender, RoutedEventArgs e)
@@ -56,6 +55,16 @@ namespace FFXVCharacterSwitcher
         private void CustomHandle_Unchecked(object send, RoutedEventArgs e)
         {
             CustomHandle = false;
+        }
+
+        private void BattleBox_Checked(object sender, RoutedEventArgs e)
+        {
+            BattleSwitch = true;
+        }
+
+        private void BattleBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            BattleSwitch = false;
         }
 
         //Probably will be removed later, as it can be checked automatically

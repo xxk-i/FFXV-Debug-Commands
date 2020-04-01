@@ -20,9 +20,13 @@ namespace FFXVHook
         int clientPID = EasyHook.RemoteHooking.GetCurrentProcessId();
         string channelName2 = null;
 
+        UInt64 ptrManager;
+
         //Hooks
-        //EasyHook.LocalHook OnSelectPlayerChangeMenuHook;
+        EasyHook.LocalHook OnSelectPlayerChangeMenuHook;
         EasyHook.LocalHook PlayerChangeManagerIsEnabledHook;
+        EasyHook.LocalHook PlayerChangeManagerUpdateHook;
+        EasyHook.LocalHook GetActorFromCharacterEntryIDHook;
 
         //Connects client and pings server to show injected DLL is responsive
         public InjectionEntryPoint(EasyHook.RemoteHooking.IContext context, string channelName)
@@ -54,7 +58,6 @@ namespace FFXVHook
         //then calls the original function
         void OnSelectPlayerChangeMenu_Hook(UInt64 ptrPlayerChangeManager, int index)
         {
-            UInt64 OnSelectPlayerChangeThis = ptrPlayerChangeManager;
             functions.OnSelectPlayerChangeMenuFunc(ptrPlayerChangeManager, index);
         }
         #endregion
@@ -62,6 +65,12 @@ namespace FFXVHook
         bool PlayerChangeManagerIsEnabled_Hook(UInt64 ptrPlayerChangeManager)
         {
             return true;
+        }
+        
+        void PlayerChangeManagerUpdate_Hook(UInt64 ptrPlayerChangeManager, UInt64 deltaTime)
+        {
+            ptrManager = ptrPlayerChangeManager;
+            functions.PlayerChangeManagerUpdateFunc(ptrPlayerChangeManager, deltaTime);
         }
 
         public void Run(EasyHook.RemoteHooking.IContext context, string channelName)
@@ -73,11 +82,17 @@ namespace FFXVHook
 
             //Install hooks
             PlayerChangeManagerIsEnabledHook = EasyHook.LocalHook.Create(functions.dbPlayerChangeManagerIsEnabledAddr, new FunctionImports.PlayerChangeManagerIsEnabled(PlayerChangeManagerIsEnabled_Hook), null);
-            //OnSelectPlayerChangeMenuHook = EasyHook.LocalHook.Create(FunctionImports.OnSelectPlayerChangeMenuAddr, new FunctionImports.OnSelectPlayerChangeMenu(OnSelectPlayerChangeMenu_Hook), null);
+            OnSelectPlayerChangeMenuHook = EasyHook.LocalHook.Create(FunctionImports.OnSelectPlayerChangeMenuAddr, new FunctionImports.OnSelectPlayerChangeMenu(OnSelectPlayerChangeMenu_Hook), null);
+            PlayerChangeManagerUpdateHook = EasyHook.LocalHook.Create(FunctionImports.PlayerChangeManagerUpdateAddr, new FunctionImports.PlayerChangeManagerUpdate(PlayerChangeManagerUpdate_Hook), null);
 
             //Activate hooks
             PlayerChangeManagerIsEnabledHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
-            //OnSelectPlayerChangeMenuHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
+            OnSelectPlayerChangeMenuHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
+            PlayerChangeManagerUpdateHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
+
+            //0x5137Ab0
+            //0x1aa58e780
+            //functions.SetUserControlActorFunc(0x5137AB0, 0x1AA59E3F0, true, false, true);
 
             try
             {
@@ -115,10 +130,10 @@ namespace FFXVHook
         public void SwitchCharacter(int index)
         {
             //Collect OnSelectPlayerChangeThis for calling OnSelectPlayerChangeMenu
-            UInt64 onSelectPlayerChangeThis = functions.GetPlayerChangeManagerFunc();
+            //UInt64 onSelectPlayerChangeThis = functions.GetPlayerChangeManagerFunc();
 
-            UInt64 isAllOpenForDegugMode = (onSelectPlayerChangeThis + 0xC8);
-            UInt64 isAllowNonBattle = (onSelectPlayerChangeThis + 0xCA);
+            //UInt64 isAllOpenForDegugMode = (onSelectPlayerChangeThis + 0xC8);
+            //UInt64 isAllowNonBattle = (onSelectPlayerChangeThis + 0xCA);
 
             /*
             This is debug version only, offsets are different or bools don't exist in release.
@@ -136,21 +151,36 @@ namespace FFXVHook
             }
             */
 
+            /*
+            _server.ReportMessage(ptrManager.ToString());
             _server.ReportMessage("Changing character to index " + index);
-            functions.OnSelectPlayerChangeMenuFunc(onSelectPlayerChangeThis, index);
+            functions.OnSelectPlayerChangeMenuFunc(functions.GetPlayerChangeManagerFunc(), index);
             _server.ReportMessage("after OnSelectPlayerChangeMenuFunc");
+            */
+
+            /*
+            UInt64 actorManager = functions.GetActorManagerInstanceFunc();
+            UInt64 partyActorPtr = functions.GetPartyActorFunc(actorManager, index);
+            functions.SetUserControlActorFunc(actorManager, partyActorPtr, true, false, true);
+            */
+
+            UInt64 actorManager = functions.GetActorManagerInstanceFunc();
+            UInt64 actorTypeManager = functions.GetActorTypeManager();
+            UInt64 actorToSwitchTo = functions.GetActorFromIndexFunc(actorTypeManager, 5);
+            
+          
+        }
+
+        public void SwitchBattleCharacter(int index)
+        {
+            _server.ReportMessage("Switching to battle actor: " + index);
+            functions.OnSelectPlayerChangeMenuFunc(functions.GetPlayerChangeManagerFunc(), index);
         }
         
         public void SwitchCharacterCustom(UInt64 customHandle)
         {
             UInt64 actorManagerThis = functions.GetActorManagerInstanceFunc();
             functions.SetUserControlActorFunc(actorManagerThis, customHandle, true, false, true); 
-        }
-
-        public void SetGuestActor(UInt64 actor)
-        {
-            UInt64 JobCommandManagerThis = functions.GetJobCommandManagerThis()
-            functions.SetGuestActor(JobCommandManagerThis, actor);
         }
 
         public void Disconnect()
@@ -176,23 +206,14 @@ namespace FFXVHook
             InjectionEntryPoint.sInstance?.SwitchCharacter(index);
         }
 
+        public void SwitchBattleCharacter(int index)
+        {
+            InjectionEntryPoint.sInstance?.SwitchBattleCharacter(index);
+        }
+
         public void SwitchCharacterCustom(UInt64 customHandle)
         {
             InjectionEntryPoint.sInstance?.SwitchCharacterCustom(customHandle);
-        }
-
-        public void DispatchCommand(string command)
-        {
-            string[] cmd = command.Split();
-
-            string mainCommand = cmd[0];
-
-            switch(mainCommand)
-            {
-                case mainCommand.("SetPartyActor"):
-                    InjectionEntryPoint.sInstance?.SetPartyActor();
-                    break;
-            }
         }
     }
 }

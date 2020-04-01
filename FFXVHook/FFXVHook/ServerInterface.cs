@@ -57,7 +57,13 @@ namespace FFXVHook
         public void SwitchCharacter(int index)
         {
             Console.WriteLine("Received character switch");
-            dllServer.SwitchCharacter(index);
+            gdllServer.SwitchCharacter(index);
+        }
+        
+        public void SwitchBattleCharacter(int index)
+        {
+            Console.WriteLine("Recieved battle character swtich");
+            dllServer.SwitchBattleCharacter(index);
         }
 
         public void SwitchCharacterCustom(UInt64 customHandle)
@@ -65,13 +71,6 @@ namespace FFXVHook
             Console.WriteLine("Received custom character switch!");
             dllServer.SwitchCharacterCustom(customHandle);
         }
-
-        public void SendCommand(string command)
-        {
-            Console.WriteLine("COMMNAND: " + command);
-            dllServer.DispatchCommand(command);
-        }
-
 
         public void Disconnect()
         {
@@ -87,7 +86,7 @@ namespace FFXVHook
 
         public bool GetDebug()
         {
-            return debug;
+            return false;
         }
     }
 }

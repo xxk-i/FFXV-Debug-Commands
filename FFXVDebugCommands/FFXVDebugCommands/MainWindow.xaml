@@ -19,11 +19,12 @@
         <TabItem Header="Party">
             <Grid>
                 <CheckBox x:Name="CustomHandleCheckBox" Content="Use Custom Handle" HorizontalAlignment="Left" Margin="20,25,0,0" VerticalAlignment="Top" Checked="CustomHandle_Checked" Unchecked="CustomHandle_Unchecked"/>
+                <CheckBox x:Name="BattleCheckBox" Content="Battle Character" HorizontalAlignment="Left" Margin="177,25,0,0" VerticalAlignment="Top" Width="225" Checked="BattleBox_Checked" Unchecked="BattleBox_Unchecked"/>
                 <ComboBox x:Name="PartyBox" Text="Character to Switch to..." HorizontalAlignment="Left" Margin="20,60,0,0" VerticalAlignment="Top" Width="220" Height="25" SelectionChanged="PartyBox_SelectionChanged">
                     <ComboBoxItem IsSelected="True">Noctis</ComboBoxItem>
                     <ComboBoxItem>Gladiolus</ComboBoxItem>
-                    <ComboBoxItem>Prompto</ComboBoxItem>
                     <ComboBoxItem>Ignis</ComboBoxItem>
+                    <ComboBoxItem>Prompto</ComboBoxItem>
                     <ComboBoxItem>Guest</ComboBoxItem>
 
                     <ComboBox.Style>
@@ -55,12 +56,6 @@
                     </TextBox.Style>
                 </TextBox>
                 <Button x:Name="PartyButton" Content="Switch To Party Member" HorizontalAlignment="Left" Margin="340,60,0,0" VerticalAlignment="Top" Width="140" Height="25" Click="PartyButton_Click"/>
-            </Grid>
-        </TabItem>
-        <TabItem Header="Console">
-            <Grid>
-                <TextBox x:Name="ConsoleBox" HorizontalAlignment="Left" Height="160" Margin="40,53,0,0" TextWrapping="NoWrap" Text="highlight me" IsReadOnly="True" VerticalAlignment="Top" Width="435"/>
-
             </Grid>
         </TabItem>
     </TabControl>
